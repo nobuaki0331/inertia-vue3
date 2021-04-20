@@ -70,7 +70,12 @@
       </div>
       <inertia-link
         class="mt-4 ml-4"
-        href="/dashboard">ダッシュボード画面へ</inertia-link>
+        href="/dashboard">ダッシュボード画面へ
+      </inertia-link>
+      <inertia-link
+        href="/count">
+        カウントページ
+      </inertia-link>
     </div>
   </div>
 </div>

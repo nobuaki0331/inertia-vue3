@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,3 +35,4 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 Route::get('/home', [HomeController::class, 'index']);
 Route::get('/blog', [BlogController::class, 'index']);
 Route::get('/contact', [ContactController::class, 'index']);
+Route::get('/count', [CountController::class, 'index']);

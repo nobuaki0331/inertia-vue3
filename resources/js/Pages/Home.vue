@@ -11,7 +11,7 @@
                 Name
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title
+                EMAIL
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 作成日
@@ -28,8 +28,8 @@
             ref="table"
             class="bg-white divide-y divide-gray-200">
             <tr
-              v-for="task in filterTasks"
-              :key="task.id">
+              v-for="user in users"
+              :key="user.id">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-10 w-10">
@@ -37,29 +37,32 @@
                   </div>
                   <div class="ml-4">
                     <div class="text-sm font-medium text-gray-900">
-                      {{ task.id }}
+                      {{ user.id }}
                     </div>
                     <div class="text-sm text-gray-500">
-                      {{ task.content }}
+                      {{ user.name }}
                     </div>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900">
-                  {{ task.title }}
+                  {{ user.email }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  {{ task.created_at }}
+                  {{ user.created_at }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ task.updated_at }}
+                {{ user.updated_at }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                <Inertia-link
+                  :href="`/account/${user.id}`" class="text-indigo-600 hover:text-indigo-900">
+                  Edit
+                </Inertia-link>
               </td>
             </tr>
 
@@ -73,8 +76,8 @@
         href="/dashboard">ダッシュボード画面へ
       </inertia-link>
       <inertia-link
-        href="/count">
-        カウントページ
+        href="/account">
+        アカウント作成ページ
       </inertia-link>
     </div>
   </div>
@@ -91,22 +94,23 @@ export default {
     JetButton,
   },
   props: {
-    tasks: {
+    users: {
       type: Array,
       default: () => []
     },
   },
   setup(props) {
     const table = ref(null)
-    const filterTasks = computed(() => props.tasks.filter(task => props.tasks.includes(task)))
+    const onEditClicked = (userId) => {
+      Inertia.get(route('account.edit', {
+        user: userId
+      }))
+    }
     onMounted(() => {
-      // テーブルのDOM取得確認
-      console.log(table.value)
     })
 
     return {
       table,
-      filterTasks,
     }
   },
 };

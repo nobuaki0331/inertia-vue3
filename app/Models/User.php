@@ -18,6 +18,10 @@ class User extends Authenticatable
     use Notifiable;
     use TwoFactorAuthenticatable;
 
+    const GENDER_NONE = 0;
+    const GENDER_MAN = 1;
+    const GENDER_WOMAN = 2;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -27,6 +31,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'gender',
     ];
 
     /**
@@ -58,4 +63,35 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function getGenderAttribute($value)
+    {
+        switch ($value) {
+            case self::GENDER_NONE:
+                return '不明';
+            case self::GENDER_MAN:
+                return '男性';
+            case self::GENDER_WOMAN:
+                return '女性';
+            default:
+                return '';
+        }
+    }
+
+    public function setGenderAttribute($value)
+    {
+        switch ($value) {
+            case '不明':
+                $this->attributes['gender'] = 0;
+                break;
+            case '男性':
+                $this->attributes['gender'] = 1;
+                break;
+            case '女性':
+                $this->attributes['gender'] = 2;
+                break;
+            default:
+                $this->attributes['gender'] = null;
+        }
+    }
 }

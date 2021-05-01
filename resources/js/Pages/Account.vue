@@ -17,6 +17,20 @@
       label="PASSWORD"
       type="password"
       placeholder="******************" />
+    <div class="p-4">
+      <input
+        type="file"
+        ref="photo"
+        name="image"
+        @change="updatePhotoPreview" />
+      <div
+        class="mt-2"
+        v-show="photoPreview">
+        <img
+          :src="photoPreview ?? form.image_url"
+          class="rounded-full h-20 w-20 object-cover">
+      </div>
+    </div>
     <select-input
       v-model="form.gender"
       :options="options"
@@ -69,10 +83,14 @@ export default {
       name: '',
       email: '',
       password: '',
+      image_url: '',
       gender: '不明',
     }))
     const options = ref(['不明', '男性', '女性'])
     const onSaveButtonClicked = () => {
+      if (photo.value) {
+        form.image_url = photo.value.files[0]
+      }
       if (props.isNew) {
         form.post(route('account.store'))
       } else {
@@ -84,6 +102,16 @@ export default {
     const onReturnButtonClicked = () => {
       Inertia.get(route('home.index'))
     }
+
+    const photo = ref(null)
+    const photoPreview = ref(null)
+    const updatePhotoPreview = () => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        photoPreview.value = e.target.result;
+      };
+      reader.readAsDataURL(photo.value.files[0]);
+    }
     onMounted(() => {
       if (!props.isNew) {
         form._method = 'PUT'
@@ -91,10 +119,14 @@ export default {
         form.email = props.user.email
         form.password = props.user.password
         form.gender = props.user.gender
+        form.image_url = props.user.image_url
       }
     })
 
     return {
+      photo,
+      photoPreview,
+      updatePhotoPreview,
       form,
       options,
       onSaveButtonClicked,

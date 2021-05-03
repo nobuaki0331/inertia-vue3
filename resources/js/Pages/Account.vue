@@ -1,57 +1,60 @@
 <template>
-  <div class="p-4 bg-blue-100">
-    <text-input
-      v-model="form.name"
-      name="Name"
-      label="NAME" />
-    <text-input
-      v-model="form.email"
-      class="bg-blue-100 border-none"
-      name="email"
-      label="EMAIL"
-      type="email" />
-    <text-input
-      v-model.number="form.password"
-      class="bg-blue-100 border-none"
-      name="password"
-      label="PASSWORD"
-      type="password"
-      placeholder="******************" />
-    <div class="p-4">
-      <input
-        type="file"
-        ref="photo"
-        name="image"
-        @change="updatePhotoPreview" />
-      <div
-        class="mt-2"
-        v-show="photoPreview">
-        <img
-          :src="photoPreview ?? form.image_url"
-          class="rounded-full h-20 w-20 object-cover">
+  <div class="p-16 bg-blue-100">
+    <div class="p-4 bg-white rounded-md">
+      <text-input
+        v-model="form.name"
+        name="Name"
+        label="NAME"/>
+      <p class="pl-4">変更前:{{ oldFormName }}</p>
+      <text-input
+        v-model="form.email"
+        class="border-none"
+        name="email"
+        label="EMAIL"
+        type="email" />
+      <p class="pl-4">変更前:{{ oldFormEmail }}</p>
+      <text-input
+        v-model.number="form.password"
+        class="border-none"
+        name="password"
+        label="PASSWORD"
+        type="password"
+        placeholder="******************" />
+      <div class="p-4">
+        <input
+          type="file"
+          ref="photo"
+          name="image"
+          @change="updatePhotoPreview" />
+        <div
+          class="mt-2"
+          v-show="photoPreview">
+          <img
+            :src="photoPreview ?? form.image_url"
+            class="rounded-full h-20 w-20 object-cover">
+        </div>
       </div>
-    </div>
-    <select-input
-      v-model="form.gender"
-      :options="options"
-      name="gender"
-      label="GENDER" />
-    <div class="m-3">
-      <default-button
-        @click="onSaveButtonClicked">
-        保存
-      </default-button>
-      <secoundary-button
-        class="ml-4"
-        @click="onReturnButtonClicked">
-        戻る
-      </secoundary-button>
+      <select-input
+        v-model="form.gender"
+        :options="options"
+        name="gender"
+        label="GENDER" />
+      <div class="flex justify-between p-3">
+        <secoundary-button
+          @click="onReturnButtonClicked">
+          戻る
+        </secoundary-button>
+        <default-button
+          @click="onSaveButtonClicked">
+          保存
+        </default-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { usePage, ref, onMounted, computed, reactive, toRefs, isRef } from "vue";
+import { usePage, ref, onMounted, computed, reactive, toRefs, isRef, watch } from "vue";
 import { hoge } from '../actions/hoge'
 import TextInput from './Components/TextInput'
 import SelectInput from './Components/SelectInput'
@@ -78,15 +81,30 @@ export default {
     },
   },
   setup(props) {
-    const form = reactive(Inertia.form({
+    const form = props.isNew ?
+    reactive(Inertia.form({
       _method: 'POST',
       name: '',
       email: '',
       password: '',
       image_url: '',
       gender: '不明',
+    })) :
+    reactive(Inertia.form({
+      _method: 'PUT',
+      name : props.user.name,
+      email : props.user.email,
+      password : props.user.password,
+      gender : props.user.gender,
+      image_url : props.user.image_url
     }))
     const options = ref(['不明', '男性', '女性'])
+
+    const oldFormName = ref('')
+    const oldFormEmail = ref('')
+    watch(() => form.name, (newValue, oldValue) => (oldFormName.value = oldValue))
+    watch(() => form.email, (newValue, oldValue) => (oldFormEmail.value = oldValue))
+
     const onSaveButtonClicked = () => {
       if (photo.value) {
         form.image_url = photo.value.files[0]
@@ -112,18 +130,10 @@ export default {
       };
       reader.readAsDataURL(photo.value.files[0]);
     }
-    onMounted(() => {
-      if (!props.isNew) {
-        form._method = 'PUT'
-        form.name = props.user.name
-        form.email = props.user.email
-        form.password = props.user.password
-        form.gender = props.user.gender
-        form.image_url = props.user.image_url
-      }
-    })
 
     return {
+      oldFormName,
+      oldFormEmail,
       photo,
       photoPreview,
       updatePhotoPreview,

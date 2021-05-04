@@ -1,5 +1,4 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
-// tailwind.config.js
 const colors = require('tailwindcss/colors')
 
 module.exports = {

@@ -130,7 +130,6 @@ export default {
     })
     const bgColor = computed(() => {
       const { user, isNew, isConfirmation } = props
-
       if (user && isConfirmation) {
         return 'bg-red-500 hover:bg-red-400'
       } else {

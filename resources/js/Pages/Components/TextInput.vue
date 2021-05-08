@@ -8,6 +8,7 @@
       <input
         :value="modelValue"
         :id="name"
+        :disabled="disabled"
         :class="{ 'border-red-500' : isActiveClass }"
         class="appearance-none block w-full  text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
         @input="$emit('update:modelValue', $event.target.value)">
@@ -26,11 +27,15 @@ export default {
     },
     name: {
       type: String,
-      required: true
+      required: true,
     },
     modelValue: {
       type: [ String, Number ],
-      default: ''
+      default: '',
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props) {

@@ -1,25 +1,34 @@
 <template>
   <div class="p-16 bg-blue-100">
     <div class="p-4 bg-white rounded-md">
+      <div
+        v-if="isConfirmation"
+        class="py-4 pl-3">
+        <h3>■アカウント削除確認</h3>
+        <p class="text-sm text-red-500">アカウントの削除を行います。削除後はデータを元に戻すことができません。</p>
+      </div>
       <text-input
         v-model="form.name"
         name="Name"
-        label="NAME"/>
-      <p class="pl-4">変更前:{{ oldFormName }}</p>
+        label="NAME"
+        :disabled="disabled" />
+      <p class="pl-4 text-xs text-red-500">変更前:{{ oldFormName }}</p>
       <text-input
         v-model="form.email"
         class="border-none"
         name="email"
         label="EMAIL"
-        type="email" />
-      <p class="pl-4">変更前:{{ oldFormEmail }}</p>
+        type="email"
+        :disabled="disabled" />
+      <p class="pl-4 text-xs text-red-500">変更前:{{ oldFormEmail }}</p>
       <text-input
         v-model.number="form.password"
         class="border-none"
         name="password"
         label="PASSWORD"
         type="password"
-        placeholder="******************" />
+        placeholder="******************"
+        :disabled="disabled" />
       <div class="p-4">
         <input
           type="file"
@@ -38,15 +47,17 @@
         v-model="form.gender"
         :options="options"
         name="gender"
-        label="GENDER" />
+        label="GENDER"
+        :disabled="disabled" />
       <div class="flex justify-between p-3">
         <secoundary-button
           @click="onReturnButtonClicked">
           戻る
         </secoundary-button>
         <default-button
+          :bg-color="bgColor"
           @click="onSaveButtonClicked">
-          保存
+          {{ buttonText }}
         </default-button>
       </div>
     </div>
@@ -79,8 +90,13 @@ export default {
       type: Boolean,
       default: false,
     },
+    isConfirmation: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props) {
+    const disabled = props.isConfirmation ? true : false
     const form = props.isNew ?
     reactive(Inertia.form({
       _method: 'POST',
@@ -105,14 +121,35 @@ export default {
     watch(() => form.name, (newValue, oldValue) => (oldFormName.value = oldValue))
     watch(() => form.email, (newValue, oldValue) => (oldFormEmail.value = oldValue))
 
+    const buttonText = computed(() => {
+      const { user, isNew, isConfirmation } = props
+      if (isNew) return '保存'
+      if (user && isConfirmation) return '削除'
+      if (user) return '更新'
+      return ''
+    })
+    const bgColor = computed(() => {
+      const { user, isNew, isConfirmation } = props
+
+      if (user && isConfirmation) {
+        return 'bg-red-500 hover:bg-red-400'
+      } else {
+        return 'bg-blue-500 hover:bg-blue-400'
+      }
+    })
     const onSaveButtonClicked = () => {
+      const { user, isNew, isConfirmation } = props
       if (photo.value) {
         form.image_url = photo.value.files[0]
       }
-      if (props.isNew) {
+      if (isNew) {
         form.post(route('account.store'))
-      } else {
-        form.post(route('account.update', {
+      } else if(user && isConfirmation) {
+        form.delete(route('account.destroy', {
+          'user' : props.user.id
+        }))
+      } else if(user) {
+        form.put(route('account.update', {
           'user' : props.user.id
         }))
       }
@@ -132,6 +169,7 @@ export default {
     }
 
     return {
+      disabled,
       oldFormName,
       oldFormEmail,
       photo,
@@ -139,6 +177,8 @@ export default {
       updatePhotoPreview,
       form,
       options,
+      buttonText,
+      bgColor,
       onSaveButtonClicked,
       onReturnButtonClicked,
     }

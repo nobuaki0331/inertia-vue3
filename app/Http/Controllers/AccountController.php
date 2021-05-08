@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Actions\Account\StoreAccount;
 use App\Actions\Account\UpdateAccount;
+use App\Actions\Account\DeleteAccount;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
+use Illuminate\Support\Facades\Redirect;
 
 class AccountController extends Controller
 {
@@ -35,8 +37,24 @@ class AccountController extends Controller
     {
         $action->execute($request->all(), $user);
 
-        return Inertia::render('Home', [
-            'users' => user::all()
-        ]);
+        return Redirect::route('home.index');
     }
+
+    public function confirmation(User $user)
+    {
+        $props = [
+            'user' => $user,
+            'is-confirmation' => true
+        ];
+
+        return Inertia::render('Account', $props);
+    }
+
+    public function destroy(DeleteAccount $action, User $user)
+    {
+        $action->execute($user);
+
+        return Redirect::route('home.index');
+    }
+
 }

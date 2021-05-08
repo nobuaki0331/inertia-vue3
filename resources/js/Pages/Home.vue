@@ -20,7 +20,10 @@
                 更新日
               </th>
               <th scope="col" class="relative px-6 py-3">
-                <span class="sr-only">Edit</span>
+                <span class="sr-only">編集</span>
+              </th>
+              <th scope="col" class="relative px-6 py-3">
+                <span class="sr-only">削除</span>
               </th>
             </tr>
           </thead>
@@ -61,7 +64,13 @@
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <Inertia-link
                   :href="`/account/${user.id}`" class="text-indigo-600 hover:text-indigo-900">
-                  Edit
+                  編集
+                </Inertia-link>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <Inertia-link
+                  :href="`/account/${user.id}/confirmation`" class="text-indigo-600 hover:text-indigo-900">
+                  削除
                 </Inertia-link>
               </td>
             </tr>
@@ -78,6 +87,10 @@
       <inertia-link
         href="/account">
         アカウント作成ページ
+      </inertia-link>
+      <inertia-link
+        href="/tailwind">
+        tailwind検証ページ
       </inertia-link>
     </div>
   </div>

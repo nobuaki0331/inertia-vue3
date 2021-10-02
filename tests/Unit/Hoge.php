@@ -10,7 +10,7 @@ class ExampleTest extends TestCase
     /**
      * @return void
      */
-    public function testBasic1Test()
+    public function testBasic2Test()
     {
         $response = $this->get('/');
         $response->assertStatus(200);

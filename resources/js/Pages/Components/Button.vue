@@ -7,13 +7,16 @@
 </template>
 
 <script>
-export default {
-  name: 'Button',
-  props: {
-    bgColor: {
-      type: String,
-      required: true,
-    },
+export default { name: 'Button' }
+</script>
+
+<script setup>
+import { defineProps } from "vue"
+
+const props = defineProps({
+  bgColor: {
+    type: String,
+    required: true,
   },
-}
+})
 </script>

@@ -65,122 +65,103 @@
 </template>
 
 <script>
-import { usePage, ref, onMounted, computed, reactive, toRefs, isRef, watch } from "vue";
-import { hoge } from '../actions/hoge'
+export default { name: 'Account' }
+</script>
+
+<script setup>
+import { ref, computed, reactive, watch, defineProps } from "vue"
 import TextInput from './Components/TextInput'
 import SelectInput from './Components/SelectInput'
 import DefaultButton from './Components/Button'
 import { Inertia } from '@inertiajs/inertia'
 import SecoundaryButton from '../Jetstream/SecondaryButton'
 
-export default {
-  name: 'Account',
-  components: {
-    TextInput,
-    SelectInput,
-    DefaultButton,
-    SecoundaryButton,
+const props = defineProps({
+  user: {
+    type: Object,
+    default: () => {},
   },
-  props: {
-    user: {
-      type: Object,
-      default: () => {},
-    },
-    isNew: {
-      type: Boolean,
-      default: false,
-    },
-    isConfirmation: {
-      type: Boolean,
-      default: false,
-    },
+  isNew: {
+    type: Boolean,
+    default: false,
   },
-  setup(props) {
-    const disabled = props.isConfirmation ? true : false
-    const form = props.isNew ?
-    reactive(Inertia.form({
-      _method: 'POST',
-      name: '',
-      email: '',
-      password: '',
-      image_url: '',
-      gender: '不明',
-    })) :
-    reactive(Inertia.form({
-      _method: 'PUT',
-      name : props.user.name,
-      email : props.user.email,
-      password : props.user.password,
-      gender : props.user.gender,
-      image_url : props.user.image_url
-    }))
-    const options = ref(['不明', '男性', '女性'])
+  isConfirmation: {
+    type: Boolean,
+    default: false,
+  },
+})
+const disabled = !!props.isConfirmation
+const form = props.isNew ?
+  reactive(Inertia.form({
+    _method: 'POST',
+    name: '',
+    email: '',
+    password: '',
+    image_url: '',
+    gender: '不明',
+  })) :
+  reactive(Inertia.form({
+    _method: 'PUT',
+    name : props.user.name,
+    email : props.user.email,
+    password : props.user.password,
+    gender : props.user.gender,
+    image_url : props.user.image_url
+  }))
 
-    const oldFormName = ref('')
-    const oldFormEmail = ref('')
-    watch(() => form.name, (newValue, oldValue) => (oldFormName.value = oldValue))
-    watch(() => form.email, (newValue, oldValue) => (oldFormEmail.value = oldValue))
-
-    const buttonText = computed(() => {
-      const { user, isNew, isConfirmation } = props
-      if (isNew) return '保存'
-      if (user && isConfirmation) return '削除'
-      if (user) return '更新'
-      return ''
-    })
-    const bgColor = computed(() => {
-      const { user, isNew, isConfirmation } = props
-      if (user && isConfirmation) {
-        return 'bg-red-500 hover:bg-red-400'
-      } else {
-        return 'bg-blue-500 hover:bg-blue-400'
-      }
-    })
-    const onSaveButtonClicked = () => {
-      const { user, isNew, isConfirmation } = props
-      if (photo.value) {
-        form.image_url = photo.value.files[0]
-      }
-      if (isNew) {
-        form.post(route('account.store'))
-      } else if(user && isConfirmation) {
-        form.delete(route('account.destroy', {
-          'user' : props.user.id
-        }))
-      } else if(user) {
-        form.put(route('account.update', {
-          'user' : props.user.id
-        }))
-      }
-    }
-    const onReturnButtonClicked = () => {
-      Inertia.get(route('home.index'))
-    }
-
-    const photo = ref(null)
-    const photoPreview = ref(null)
-    const updatePhotoPreview = () => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        photoPreview.value = e.target.result;
-      };
-      reader.readAsDataURL(photo.value.files[0]);
-    }
-
-    return {
-      disabled,
-      oldFormName,
-      oldFormEmail,
-      photo,
-      photoPreview,
-      updatePhotoPreview,
-      form,
-      options,
-      buttonText,
-      bgColor,
-      onSaveButtonClicked,
-      onReturnButtonClicked,
-    }
+const options = ['不明', '男性', '女性']
+const oldFormName = ref('')
+const oldFormEmail = ref('')
+watch(
+  () => form.name,
+  (_, oldVal) => {
+    oldFormName.value = oldVal
   }
+)
+watch(
+  () => form.email,
+  (_, oldVal) => {
+    oldFormEmail.value = oldVal
+  }
+)
+const buttonText = computed(() => {
+  const { user, isNew, isConfirmation } = props
+  if (isNew) return '保存'
+  if (user && isConfirmation) return '削除'
+  if (user) return '更新'
+  return ''
+})
+const bgColor = computed(() => {
+  const { user, isConfirmation } = props
+  return user && isConfirmation ? 'bg-red-500 hover:bg-red-400' : 'bg-blue-500 hover:bg-blue-400'
+})
+const onSaveButtonClicked = () => {
+  const { user, isNew, isConfirmation } = props
+  if (photo.value) {
+    form.image_url = photo.value.files[0]
+  }
+  if (isNew) {
+    form.post(route('account.store'))
+  } else if(user && isConfirmation) {
+    form.delete(route('account.destroy', {
+      'user' : props.user.id
+    }))
+  } else if(user) {
+    form.put(route('account.update', {
+      'user' : props.user.id
+    }))
+  }
+}
+const onReturnButtonClicked = () => {
+  Inertia.get(route('home.index'))
+}
+const photo = ref(null)
+const photoPreview = ref(null)
+const updatePhotoPreview = () => {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    photoPreview.value = e.target.result;
+  };
+  reader.readAsDataURL(photo.value.files[0]);
 }
 </script>

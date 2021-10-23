@@ -6,50 +6,49 @@
       {{ label }}
     </label>
       <input
-        :value="modelValue"
+        v-model="value"
         :id="name"
         :disabled="disabled"
         :class="{ 'border-red-500' : isActiveClass }"
-        class="appearance-none block w-full  text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-        @input="$emit('update:modelValue', $event.target.value)">
+        class="appearance-none block w-full  text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
   </div>
 </template>
 
 <script>
-import { ref, watch, watchEffect } from "vue";
+export default { name: 'TextInput' }
+</script>
 
-export default {
-  name: 'TextIput',
-  props: {
-    label: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    modelValue: {
-      type: [ String, Number ],
-      default: '',
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  setup(props) {
-    const isActiveClass = ref(false)
-    watch(
-      () => props.modelValue,
-      () => {
-        isActiveClass.value = true
-      }
-    )
+<script setup>
+import { ref, watch, computed, defineProps, defineEmits } from "vue"
 
-    return {
-      isActiveClass,
-    }
+const props = defineProps({
+  label: {
+    type: String,
+    required: true,
   },
-}
+  name: {
+    type: String,
+    required: true,
+  },
+  modelValue: {
+    type: [ String, Number ],
+    default: '',
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+})
+const emit = defineEmits(['update:modelValue'])
+const value = computed({
+  get: () => props.modelValue,
+  set: (val) => emit('update:modelValue', val)
+})
+const isActiveClass = ref(false)
+watch(
+  () => props.modelValue,
+  () => {
+    isActiveClass.value = true
+  }
+)
 </script>
